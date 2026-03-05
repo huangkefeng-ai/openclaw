@@ -181,9 +181,7 @@ export const dispatchTelegramMessage = async ({
   const streamReasoningDraft = resolvedReasoningLevel === "stream";
   const previewStreamingEnabled = streamMode !== "off";
   const draftReplyToMessageId =
-    typeof msg.message_id === "number" && (!isGroup || replyToMode !== "off")
-      ? msg.message_id
-      : undefined;
+    typeof msg.message_id === "number" && replyToMode !== "off" ? msg.message_id : undefined;
   const canStreamAnswerDraft =
     previewStreamingEnabled && !accountBlockStreamingEnabled && !forceBlockStreamingForReasoning;
   const canStreamReasoningDraft = canStreamAnswerDraft || streamReasoningDraft;
