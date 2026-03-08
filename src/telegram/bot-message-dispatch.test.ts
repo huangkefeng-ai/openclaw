@@ -1227,6 +1227,13 @@ describe("dispatchTelegramMessage draft streaming", () => {
         previewTransport: "message",
       }),
     );
+    expect(createTelegramDraftStream.mock.calls[1]?.[0]).toEqual(
+      expect.objectContaining({
+        thread: { id: 777, scope: "dm" },
+        replyToMessageId: 456,
+        previewTransport: "message",
+      }),
+    );
   });
 
   it("materializes DM answer draft final without sending a duplicate final message", async () => {
