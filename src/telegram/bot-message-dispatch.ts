@@ -194,6 +194,11 @@ export const dispatchTelegramMessage = async ({
   const archivedAnswerPreviews: ArchivedPreview[] = [];
   const archivedReasoningPreviewIds: number[] = [];
   const createDraftLane = (laneName: LaneName, enabled: boolean): DraftLaneState => {
+    // Telegram's native draft preview does not support reply_to_message_id.
+    // When we are replying to a specific message, prefer a real message that
+    // we edit in place so the streamed preview stays attached to the quote.
+    const useMessagePreviewTransportForQuotedReply =
+      threadSpec?.scope === "dm" && draftReplyToMessageId != null;
     const useMessagePreviewTransportForDmReasoning =
       laneName === "reasoning" && threadSpec?.scope === "dm" && canStreamAnswerDraft;
     const stream = enabled
@@ -202,7 +207,10 @@ export const dispatchTelegramMessage = async ({
           chatId,
           maxChars: draftMaxChars,
           thread: threadSpec,
-          previewTransport: useMessagePreviewTransportForDmReasoning ? "message" : "auto",
+          previewTransport:
+            useMessagePreviewTransportForQuotedReply || useMessagePreviewTransportForDmReasoning
+              ? "message"
+              : "auto",
           replyToMessageId: draftReplyToMessageId,
           minInitialChars: draftMinInitialChars,
           renderText: renderDraftPreview,
